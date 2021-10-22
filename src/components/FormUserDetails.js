@@ -13,6 +13,7 @@ export class FormUserDetails extends Component {
 
   render() {
     const { values, handleChange, params } = this.props;
+	
     return (
       <MuiThemeProvider>
         <>
@@ -53,7 +54,7 @@ export class FormUserDetails extends Component {
               color="primary"
               variant="contained"
               onClick={this.continue}
-            >Continue: {params}</Button>
+            >Continue: {params.id}</Button>
           </Dialog>
         </>
       </MuiThemeProvider>

@@ -3,20 +3,12 @@ import Dialog from '@material-ui/core/Dialog';
 import AppBar from '@material-ui/core/AppBar';
 import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
 
-export class Success extends Component {
-  continue = e => {
-    e.preventDefault();
-    // PROCESS FORM //
-    this.props.nextStep();
-  };
-
-  back = e => {
-    e.preventDefault();
-    this.props.prevStep();
-  };
+export class ErrorMessage extends Component {
 
   render() {
-    return (
+	const { printMsg } = this.props;
+    
+	return (
       <MuiThemeProvider>
         <>
           <Dialog
@@ -25,8 +17,8 @@ export class Success extends Component {
             maxWidth='sm'
           >
             <AppBar title="Success" />
-            <h1>Thank You For Your Submission</h1>
-            <p>You will get an email with further instructions.</p>
+            <h1>{printMsg[0]}</h1>
+            <p>{printMsg[1]}</p>
           </Dialog>
         </>
       </MuiThemeProvider>
@@ -34,4 +26,4 @@ export class Success extends Component {
   }
 }
 
-export default Success;
+export default ErrorMessage;

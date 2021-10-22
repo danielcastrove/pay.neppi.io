@@ -1,25 +1,35 @@
 import React, { Component } from 'react';
-import FormUserDetails from './FormUserDetails';
+import AuthUser from './AuthUser';
 import FormPersonalDetails from './FormPersonalDetails';
 import Confirm from './Confirm';
 import Success from './Success';
+import ErrorMessage from './ErrorMessage';
 
 export class UserForm extends Component {
   state = {
     step: 1,
-    firstName: '',
-    lastName: '',
     email: '',
-	pass: '',
+	password: '',
     occupation: '',
+	firstName: '',
+    lastName: '',
     city: '',
     bio: '',
 	show: false,
     url: '',
     path: '',
-    params: ''
+    params: {
+      id: '',
+	  commerce_tk: '',
+      amount: '',
+	  bank_provider: '',
+	  origin: '',
+	  redirect_uri: '',
+	  token_pay: '',
+	  token_con_u: ''
+    }
   };
-  
+
   componentDidMount() {
     //creado por danielcastrove
     //this.urlParamsF();}
@@ -34,7 +44,16 @@ export class UserForm extends Component {
         show: true,
         url: window.location.href,
         path: window.location.pathname,
-        params: get_params.get("id")
+        params: {
+			 id: get_params.get("id"),
+			 commerce_tk: get_params.get("commerce_tk"),
+			 amount: get_params.get("amount"),
+			 bank_provider: get_params.get("bank_provider"),
+			 origin: get_params.get("origin"),
+			 redirect_uri: get_params.get("redirect_uri"),
+			 token_pay: '',
+			 token_con_u: ''
+		}	
       });
     } 
   } //end fuction componentDidMount 
@@ -62,14 +81,16 @@ export class UserForm extends Component {
 
 	render() {
 		const { step } = this.state;
-		const { firstName, lastName, email, occupation, city, bio, params } = this.state;
-		const values = { firstName, lastName, email, occupation, city, bio, params };
-
+		const { email, password, firstName, lastName, occupation, city, bio } = this.state;
+		const values = { email, password, firstName, lastName, occupation, city, bio };
+		const { show, url, path, params } = this.state;
+		const printMsg = ["Warning: the correct information was not sent to make the payment.", "Please Return to Trade ..."];
+		
 		switch (step) {
 			case 1:
 				if(show){
 					return (
-						<FormUserDetails
+						<AuthUser
 						  nextStep={this.nextStep}
 						  handleChange={this.handleChange}
 						  values={values}
@@ -78,7 +99,12 @@ export class UserForm extends Component {
 					);
 				}
 				else{
-				  return (<h1>Advertencia no envio los datos correctos: Retornar al comercio...</h1>);
+					return (
+						<ErrorMessage
+							printMsg= {printMsg}
+							handleChange={this.handleChange}
+						/>
+					);
 				}  
 			case 2:
 				return (
