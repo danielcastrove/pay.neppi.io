@@ -15,11 +15,6 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
 import AuthUserCheckout from './AuthUserCheckout';
 import ErrorMessage from './ErrorMessage';
-import {
-	BrowserRouter as Router,
-	Switch,
-	Route
-  } from "react-router-dom";
 //import AddressForm from './AddressForm';
 //import PaymentForm from './PaymentForm';
 //import Review from './Review';
@@ -55,20 +50,7 @@ export class CheckoutPaylater extends Component {
 		  redirect_uri: '',
 		  token_pay: '',
 		  token_con_u: ''
-		},
-		container: {
-		  component: "main",
-		  maxWidth: "sm",
-		  sx_mb: 4
-		},
-		paper:{
-		  variant: "outlined",
-		  sx_my_xs: 3,
-		  sx_my_md: 6,
-		  sx_p_xs: 2,
-		  sx_p_md: 3
 		}
-		
 	};
 
 	componentDidMount() {
@@ -76,7 +58,7 @@ export class CheckoutPaylater extends Component {
 		//this.urlParamsF();}
 		//const { params } = this.state;;
 		//const location = useLocation();
-		const { show, step } = this.state;
+		const { show, step, showButton, showHeader, showTitle, showLabel, showCopy, showPaper } = this.state;
 		
 		//obtenemos las variables get
 		let get_params = new URLSearchParams(window.location.search);
@@ -105,19 +87,7 @@ export class CheckoutPaylater extends Component {
 					showButton: false,
 					showLabel: false,
 					showCopy: false,
-					showPaper: false,
-					container: {
-					  component: "main",
-					  maxWidth: "xs",
-					  sx_mb: 0
-					},
-					paper:{
-					  variant: "basic",
-					  sx_my_xs: 0,
-					  sx_my_md: 0,
-					  sx_p_xs: 0,
-					  sx_p_md: 0
-					}
+					showPaper: false
 				});
 			}
 		}
@@ -154,26 +124,16 @@ export class CheckoutPaylater extends Component {
 			case 1:
 				if(show){
 					return (
-
-						<Router>
-							<Switch>
-
-								<Route path="/redirect">
-		
-								</Route>
-								<Route path="/">
-									<AuthUserCheckout
-									nextStep={this.nextStep}
-									handleChange={this.handleChange}
-									values={values}
-									showHeader={showHeader}
-									params={params}
-									/>
-								</Route>
-							</Switch>
-						</Router>
+						<AuthUserCheckout
+						  nextStep={this.nextStep}
+						  handleChange={this.handleChange}
+						  values={values}
+						  showHeader={showHeader}
+						  params={params}
+						/>
 					);
-				}else{
+				}
+				else{
 					return (
 						<ErrorMessage
 							printMsg= {printMsg}
@@ -211,7 +171,7 @@ export class CheckoutPaylater extends Component {
 		const { step } = this.state;
 		const { email, password, firstName, lastName, occupation, city, bio } = this.state;
 		const values = { email, password, firstName, lastName, occupation, city, bio };
-		const { show, showButton, showHeader, showTitle, showLabel, showCopy, showPaper, container, paper, url, path, params } = this.state;
+		const { show, showButton, showHeader, showTitle, showLabel, showCopy, showPaper, url, path, params } = this.state;
 		
 		//const [activeStep, setActiveStep] = React.useState(0);
 
@@ -251,8 +211,8 @@ export class CheckoutPaylater extends Component {
 				</AppBar>
 				)}
 				
-				<Container component={container.component} maxWidth={container.maxWidth} sx={{ mb: container.sx_mb }}>
-					<Paper variant={paper.variant} sx={{ my: { xs: paper.sx_my_xs, md: paper.sx_my_md }, p: { xs: paper.sx_p_xs, md: paper.sx_p_md } }}>
+				<Container component="main" maxWidth="sm" sx={{ mb: 4 }}>
+					<Paper variant="outlined" sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}>
 					
 						{showTitle  && (
 						<Typography component="h1" variant="h4" align="center">
@@ -284,7 +244,6 @@ export class CheckoutPaylater extends Component {
 								</Typography>
 							</React.Fragment>
 							) : (
-
 							<React.Fragment>
 								{this.getStepContent(step)}
 								{showButton && (

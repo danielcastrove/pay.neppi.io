@@ -19,6 +19,7 @@ export class AuthUser extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+		  showButton: true,
 		  showHeader: false,
 		  postId: '',
 		  errorMessage: null,
@@ -122,103 +123,99 @@ export class AuthUser extends Component {
 		const { postId, isLoaded, items } = this.state;
 		
 		return (
-			<ThemeProvider theme={theme}>
-				<Container component="main" maxWidth="xs">
-					<CssBaseline />
+			 <React.Fragment>
+				<Box
+					sx={{
+						marginTop: 8,
+						display: 'flex',
+						flexDirection: 'column',
+						alignItems: 'center',
+					}}
+				>
+				
+					<Avatar
+					  alt="Neppi - Buy Now, pay Later"
+					  src="/assets/img/logo-neppi-isotipo.png"
+					  sx={{ width: 56, height: 56, m: 1, bgcolor: 'secondary.main' }}
+					/>
+					{ /*<Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+						<LockOutlinedIcon />
+					</Avatar>*/}
 					
-					<Box
-						sx={{
-							marginTop: 8,
-							display: 'flex',
-							flexDirection: 'column',
-							alignItems: 'center',
-						}}
-					>
+					<Typography component="h1" variant="h5">
+						Sign in and purchase
+					</Typography>
 					
-						<Avatar
-						  alt="Neppi - Buy Now, pay Later"
-						  src="/assets/img/logo-neppi-isotipo.png"
-						  sx={{ width: 56, height: 56, m: 1, bgcolor: 'secondary.main' }}
+					<Box component="form" onSubmit={this.signIn} noValidate sx={{ mt: 1 }}>
+						<TextField
+							margin="normal"
+							required
+							fullWidth
+							id="email"
+							label="Email Address"
+							name="email"
+							autoComplete="email"
+							autoFocus
 						/>
-						{ /*<Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-							<LockOutlinedIcon />
-						</Avatar>*/}
 						
-						<Typography component="h1" variant="h5">
-							Sign in and purchase
-						</Typography>
+						<TextField
+						  margin="normal"
+						  required
+						  fullWidth
+						  name="password"
+						  label="Password"
+						  type="password"
+						  id="password"
+						  autoComplete="current-password"
+						/>
 						
-						<Box component="form" onSubmit={this.signIn} noValidate sx={{ mt: 1 }}>
-							<TextField
-								margin="normal"
-								required
-								fullWidth
-								id="email"
-								label="Email Address"
-								name="email"
-								autoComplete="email"
-								autoFocus
-							/>
-							
-							<TextField
-							  margin="normal"
-							  required
-							  fullWidth
-							  name="password"
-							  label="Password"
-							  type="password"
-							  id="password"
-							  autoComplete="current-password"
-							/>
-							
-							<FormControlLabel
-							  control={<Checkbox value="remember" color="primary" />}
-							  label="Remember me"
-							/>
-							
-							{ (!postId)?
-							<Button
-								type="submit"
-								fullWidth
-								variant="contained"
-								sx={{ mt: 3, mb: 2 }}
-							>
-								Sign In: postId: {postId} | id: {params.id}
-							</Button>
-							:
-							<Button
-								type="submit"
-								fullWidth
-								variant="contained"
-								sx={{ mt: 3, mb: 2 }}
-								onClick={this.continueClick}
-							>
-								Ir al Dashboard { /*: postId: {postId} | id: {params.id}*/}
-							</Button>
-							}
-							
-							<Grid container>
-								<Grid item xs>
-									<Link href="#" variant="body2">
-									  Forgot password?
-									</Link>
-								</Grid>
-							  
-								<Grid item>
-									<Link href="#" variant="body2">
-										{"Don't have an account? Sign Up"}
-									</Link>
-								</Grid>
+						<FormControlLabel
+						  control={<Checkbox value="remember" color="primary" />}
+						  label="Remember me"
+						/>
+						
+						{ (!postId)?
+						<Button
+							type="submit"
+							fullWidth
+							variant="contained"
+							sx={{ mt: 3, mb: 2 }}
+						>
+							Sign In: postId: {postId} | id: {params.id}
+						</Button>
+						:
+						<Button
+							type="submit"
+							fullWidth
+							variant="contained"
+							sx={{ mt: 3, mb: 2 }}
+							onClick={this.continueClick}
+						>
+							Ir al Dashboard { /*: postId: {postId} | id: {params.id}*/}
+						</Button>
+						}
+						
+						<Grid container>
+							<Grid item xs>
+								<Link href="#" variant="body2">
+								  Forgot password?
+								</Link>
 							</Grid>
-						</Box>
+						  
+							<Grid item>
+								<Link href="#" variant="body2">
+									{"Don't have an account? Sign Up"}
+								</Link>
+							</Grid>
+						</Grid>
 					</Box>
-					
-					<this.copyright sx={{ mt: 8, mb: 4 }} />
-					
-					{ /*<Copyright sx={{ mt: 8, mb: 4 }} /> this.copyright("sx={{ mt: 8, mb: 4 }}")*/}
+				</Box>
+				
+				{ <this.copyright sx={{ mt: 8, mb: 4 }} />}
+				
+				{ /*<Copyright sx={{ mt: 8, mb: 4 }} /> this.copyright("sx={{ mt: 8, mb: 4 }}")*/}
 				  
-				</Container>
-			</ThemeProvider>
+			</React.Fragment>
 		);
 	}
 }
