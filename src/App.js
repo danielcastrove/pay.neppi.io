@@ -1,10 +1,10 @@
 import React from 'react';
-import { UserForm } from './components/UserForm';
+import { CheckoutPaylater } from './components/CheckoutPaylater';
 
 const App = () => {
   return (
     <div className="App">
-      <UserForm />
+      <CheckoutPaylater />
     </div>
   );
 }

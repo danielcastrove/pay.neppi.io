@@ -1,29 +1,27 @@
 import React, { Component } from 'react';
-import Dialog from '@material-ui/core/Dialog';
-import AppBar from '@material-ui/core/AppBar';
-import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 
 export class ErrorMessage extends Component {
 
-  render() {
-	const { printMsg } = this.props;
+	render() {
+		const { printMsg } = this.props;
     
-	return (
-      <MuiThemeProvider>
-        <>
-          <Dialog
-            open
-            fullWidth
-            maxWidth='sm'
-          >
-            <AppBar title="Success" />
-            <h1>{printMsg[0]}</h1>
-            <p>{printMsg[1]}</p>
-          </Dialog>
-        </>
-      </MuiThemeProvider>
-    );
-  }
+		return (
+			<React.Fragment>
+				<Typography variant="h5" gutterBottom>
+					{printMsg[0]}
+				</Typography>
+		
+				<Typography variant="subtitle1">
+				  {printMsg[1]}
+				</Typography>
+			</React.Fragment>
+		);
+	}
 }
 
 export default ErrorMessage;

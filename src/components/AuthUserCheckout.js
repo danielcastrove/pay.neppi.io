@@ -19,6 +19,7 @@ export class AuthUser extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+		  showHeader: false,
 		  postId: '',
 		  errorMessage: null,
 		  isLoaded: false,
