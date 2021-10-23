@@ -15,6 +15,11 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
 import AuthUserCheckout from './AuthUserCheckout';
 import ErrorMessage from './ErrorMessage';
+import {
+	BrowserRouter as Router,
+	Switch,
+	Route
+  } from "react-router-dom";
 //import AddressForm from './AddressForm';
 //import PaymentForm from './PaymentForm';
 //import Review from './Review';
@@ -102,16 +107,26 @@ export class CheckoutPaylater extends Component {
 			case 1:
 				if(show){
 					return (
-						<AuthUserCheckout
-						  nextStep={this.nextStep}
-						  handleChange={this.handleChange}
-						  values={values}
-						  showHeader={showHeader}
-						  params={params}
-						/>
+
+						<Router>
+							<Switch>
+
+								<Route path="/redirect">
+		
+								</Route>
+								<Route path="/">
+									<AuthUserCheckout
+									nextStep={this.nextStep}
+									handleChange={this.handleChange}
+									values={values}
+									showHeader={showHeader}
+									params={params}
+									/>
+								</Route>
+							</Switch>
+						</Router>
 					);
-				}
-				else{
+				}else{
 					return (
 						<ErrorMessage
 							printMsg= {printMsg}
@@ -222,7 +237,7 @@ export class CheckoutPaylater extends Component {
 							) : (
 								<React.Fragment>
 									{this.getStepContent(step)}
-									{showButton && (
+									{/*showButton && (
 										<Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
 											{step !== 0 && (
 												<Button onClick={this.prevStep} sx={{ mt: 3, ml: 1 }}>
@@ -238,7 +253,7 @@ export class CheckoutPaylater extends Component {
 												{step === steps.length - 1 ? 'Place order' : 'Next'}
 											</Button>
 										</Box>
-									)}	
+											)*/}	
 								</React.Fragment>
 							)}
 						</React.Fragment>

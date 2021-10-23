@@ -51,7 +51,7 @@ export class AuthUser extends Component {
 				password: data_form.get('password') 
 			})
 		};
-		fetch('https://qa.neppi.io/auth/local', requestOptions)
+		fetch('http://mystrapi.mooo.com:1337/auth/local', requestOptions)
 			.then(async response => {
 				const isJson = response.headers.get('content-type')?.includes('application/json');
 				const data = isJson && await response.json();
@@ -79,7 +79,7 @@ export class AuthUser extends Component {
 						items: data 
 					})
 					
-					this.continue()
+					//this.continue()
 					
 					console.log({
 						jwt: data.user.confirmed,
