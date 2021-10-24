@@ -15,7 +15,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const theme = createTheme();
 
-export class AuthUser extends Component {
+export class AuthUserCheckout extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -114,6 +114,14 @@ export class AuthUser extends Component {
 		this.props.nextStep();
 	};
 	
+	linkClick = (get_step_l) => {
+		const get_step  = get_step_l;
+		
+		if(get_step) {
+			this.props.linkClick(get_step);
+		}
+	};
+	
 	continue = () => {
 		this.props.nextStep();
 	};
@@ -143,7 +151,7 @@ export class AuthUser extends Component {
 					</Avatar>*/}
 					
 					<Typography component="h1" variant="h5">
-						Sign in and purchase
+						Sign in and purchase in installments
 					</Typography>
 					
 					<Box component="form" onSubmit={this.signIn} noValidate sx={{ mt: 1 }}>
@@ -203,7 +211,7 @@ export class AuthUser extends Component {
 							</Grid>
 						  
 							<Grid item>
-								<Link href="#" variant="body2">
+								<Link href="#" variant="body2" onClick={this.continue}>
 									{"Don't have an account? Sign Up"}
 								</Link>
 							</Grid>
@@ -216,8 +224,8 @@ export class AuthUser extends Component {
 				{ /*<Copyright sx={{ mt: 8, mb: 4 }} /> this.copyright("sx={{ mt: 8, mb: 4 }}")*/}
 				  
 			</React.Fragment>
-		);
-	}
-}
+		); //end return
+	} //end render
+} //end class
 
-export default AuthUser;
+export default AuthUserCheckout;

@@ -14,6 +14,7 @@ import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
 import AuthUserCheckout from './AuthUserCheckout';
+import RegisterUser from './RegisterUser';
 import ErrorMessage from './ErrorMessage';
 //import AddressForm from './AddressForm';
 //import PaymentForm from './PaymentForm';
@@ -93,7 +94,7 @@ export class CheckoutPaylater extends Component {
 				}	
 			});
 			
-			if(step==1){
+			if(step==1 || step==2){
 				this.setState({
 					showHeader: false,
 					showTitle: false,
@@ -152,6 +153,7 @@ export class CheckoutPaylater extends Component {
 						<AuthUserCheckout
 						  nextStep={this.nextStep}
 						  handleChange={this.handleChange}
+						  linkClick={this.linkClick}
 						  values={values}
 						  showHeader={showHeader}
 						  params={params}
@@ -166,6 +168,17 @@ export class CheckoutPaylater extends Component {
 						/>
 					);
 				}
+			case 2:
+				return (
+					<RegisterUser
+					  nextStep={this.nextStep}
+					  prevStep={this.prevStep}
+					  handleChange={this.handleChange}
+					  values={values}
+					  showHeader={showHeader}
+					  params={params}
+					/>
+				);
 			default:
 				throw new Error('Unknown step');
 		}
@@ -190,6 +203,16 @@ export class CheckoutPaylater extends Component {
 	// Handle fields change
 	handleChange = input => e => {
 		this.setState({ [input]: e.target.value });
+	};
+	
+	linkClick = (get_step_l) => {
+		const { get_step } = get_step_l;
+		
+		if(get_step) {
+			this.setState({ 
+				step: get_step 
+			})
+		}
 	};
 
 	render() {
@@ -299,8 +322,8 @@ export class CheckoutPaylater extends Component {
 					
 				</Container>
 			</ThemeProvider>
-		);
-	}
-}
+		); //end return
+	} //end render
+} //end class
 
 export default CheckoutPaylater;
