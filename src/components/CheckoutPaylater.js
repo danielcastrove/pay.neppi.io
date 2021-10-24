@@ -14,7 +14,6 @@ import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
 import AuthUserCheckout from './AuthUserCheckout';
-import ErrorMessage from './ErrorMessage';
 import {
 	BrowserRouter as Router,
 	Switch,
@@ -81,7 +80,7 @@ export class CheckoutPaylater extends Component {
 		//obtenemos las variables get
 		let get_params = new URLSearchParams(window.location.search);
 		//segun el caso cambiamos las variables de los estaos
-		if(get_params.has("id")){
+		if(get_params.has("id") && get_params.has("amount")){
 			this.setState({
 				show: true,
 				url: window.location.href,
@@ -105,18 +104,11 @@ export class CheckoutPaylater extends Component {
 					showButton: false,
 					showLabel: false,
 					showCopy: false,
-					showPaper: false,
+					showPaper: true,
 					container: {
 					  component: "main",
 					  maxWidth: "xs",
 					  sx_mb: 0
-					},
-					paper:{
-					  variant: "basic",
-					  sx_my_xs: 0,
-					  sx_my_md: 0,
-					  sx_p_xs: 0,
-					  sx_p_md: 0
 					}
 				});
 			}
@@ -147,19 +139,15 @@ export class CheckoutPaylater extends Component {
 	};
 	
 	getStepContent = (step) => {
-		const { show, showButton, showHeader, values, params } = this.state;
-		const printMsg = ["Warning: the correct information was not sent to make the payment.", "Please Return to Trade ..."];
-			
-		switch (step) {
-			case 1:
-				if(show){
+		const { showHeader, values, params } = this.state;
+	
 					return (
 
 						<Router>
 							<Switch>
 
 								<Route path="/redirect">
-		
+									<h1>Estoy en la redireccion</h1>
 								</Route>
 								<Route path="/">
 									<AuthUserCheckout
@@ -173,18 +161,8 @@ export class CheckoutPaylater extends Component {
 							</Switch>
 						</Router>
 					);
-				}else{
-					return (
-						<ErrorMessage
-							printMsg= {printMsg}
-							handleChange={this.handleChange}
-						/>
-					);
 				}
-			default:
-				throw new Error('Unknown step');
-		}
-	};
+
 	
 	// Proceed to next step
 	nextStep = () => {

@@ -8,10 +8,14 @@ import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
+import { Alert } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import ErrorMessage from './ErrorMessage';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import genetareConcentID from '../services/genetareConcentID'
+import axios from 'axios';
 
 const theme = createTheme();
 
@@ -24,10 +28,19 @@ export class AuthUser extends Component {
 		  postId: '',
 		  errorMessage: null,
 		  isLoaded: false,
-		  items: []
+		  infoComercio: {},
+		  items: [],
+		  tokenId: this.props.params.id,
+		  printMsg: ["Warning: the correct information was not sent to make the payment.", "Please Return to Trade ..."]
 		};
+
 	}
+	validateParams = () => {
+		const { show, showButton, showHeader, values, params } = this.state;
+		const printMsg = ["Warning: the correct information was not sent to make the payment.", "Please Return to Trade ..."];
 	
+					
+	};
 	requestSend = (event) => {
 		event.preventDefault();
 		const data = new FormData(event.currentTarget);
@@ -40,6 +53,7 @@ export class AuthUser extends Component {
 	
 	signIn = (event) => {
 		event.preventDefault();
+		this.setState({ errorMessage: null })
 		const data_form = new FormData(event.currentTarget);
 		
 		const requestOptions = {
@@ -64,21 +78,70 @@ export class AuthUser extends Component {
 				});*/
 				
 				// check for error response
-				if(!response.ok || !data.jwt || data.error) {
+				if(!response?.ok && !data?.jwt && data?.error) {
 					// get error message from body or default to response status			
 					const error = (data && data.message) || response.status;
 					//return Promise.reject(error);
 					
-					this.setState({ errorMessage: data.error });
+					this.setState({ errorMessage: "Ususario o contraseña"});
 					console.error('There was an error!', data.error);
+				} else if(response?.ok && !data?.jwtCIBC ) {
+					// get error message from body or default to response status			
+					const error = (data && data.message) || response.status;
+					//return Promise.reject(error);
+					
+					this.setState({ errorMessage: "No se logro recuperar el token bancario"});
+					console.error('There was an error!', error);
+				} else if (response?.ok && !data?.user?.confirmed ) {
+					// get error message from body or default to response status			
+					const error = (data && data.message) || response.status;
+					//return Promise.reject(error);
+					
+					this.setState({ errorMessage: "Ususario no confirmado"});
+					console.error('There was an error!', error);
 				}
 				
-				if(data.jwt && data.user.confirmed){
+				if(data?.jwt && data?.jwtCIBC  && data?.user?.confirmed){
 					this.setState({ 
 						postId: data.jwt,
+						jwtCIBC: data.jwtCIBC,
 						isLoaded: true,
 						items: data 
 					})
+
+					const data2 = JSON.stringify({
+					"tokenTerminal": this.state.tokenId
+					});
+
+					const configComercio = {
+					method: 'post',
+					url: 'http://mystrapi.mooo.com:1337/comercios/getComercioFromToken',
+					headers: { 
+						'Authorization': 'Bearer '+data.jwt, 
+						'Content-Type': 'application/json'
+					},
+					data : data2
+					};
+
+					axios(configComercio)
+					.then(async (response) => {
+						if(response?.data?.status == "Success"){
+							this.setState({ 
+								infoComercio: response?.data?.dataEnvio ,
+							})
+							const objectoConcentID = genetareConcentID()
+						} else if(response?.data?.mensaje) {
+							this.setState({ errorMessage: response?.data?.mensaje});
+	
+						} else {
+							this.setState({ errorMessage: "no se logro recuperar la data de la tienda"});
+
+						}
+					})
+					.catch(error => {
+						this.setState({ errorMessage: error.toString() });
+						console.error('There was an error!', error);
+					});
 					
 					//this.continue()
 					
@@ -120,8 +183,20 @@ export class AuthUser extends Component {
 	
 	render() {
 		const { values, handleChange, params } = this.props;
-		const { postId, isLoaded, items } = this.state;
-		
+		const { postId, isLoaded, items, errorMessage  } = this.state;
+		if (this.validateParams()) {
+
+		} else {
+			return (
+				<React.Fragment>
+					<ErrorMessage
+						printMsg= {this.state?.printMsg}
+						handleChange={this.props?.params?.handleChange}
+					/>
+				</React.Fragment>
+				);
+
+		}
 		return (
 			 <React.Fragment>
 				<Box
@@ -173,7 +248,14 @@ export class AuthUser extends Component {
 						  control={<Checkbox value="remember" color="primary" />}
 						  label="Remember me"
 						/>
-						
+						{
+							(errorMessage) ?
+								<Alert variant="filled" severity="error">
+								{errorMessage}
+						  		</Alert>:
+								null  
+							
+						}
 						{ (!postId)?
 						<Button
 							type="submit"
