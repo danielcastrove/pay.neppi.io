@@ -1,6 +1,8 @@
-# React Step Form
+# Neppi Finance APP - Button Pay buy now, pay later
 
-> Form with multiple steps and confirmation. Frontend only, no API. Uses Material UI
+> Neppi - Button Pay buy now, pay later
+>We are a Fintech with which you can buy the products you want in installments and pay for them later.
+>You can also Pre-purchase services and save them in our Mobile Digital Assets Wallet for later use.
 
 ## Quick Start
 
@@ -19,8 +21,8 @@ npm run build
 
 ### Author
 
-Brad Traversy
-[Traversy Media](http://www.traversymedia.com)
+Team Neppi
+[Neppi Finance](http://www.neppi.io)
 
 ### Version
 
