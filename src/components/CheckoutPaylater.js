@@ -14,11 +14,15 @@ import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
 import AuthUserCheckout from './AuthUserCheckout';
+import Success from './Success'
 import {
 	BrowserRouter as Router,
 	Switch,
 	Route
   } from "react-router-dom";
+
+import RegisterUser from './RegisterUser';
+import AppContext from '../contextos/AppContext'
 //import AddressForm from './AddressForm';
 //import PaymentForm from './PaymentForm';
 //import Review from './Review';
@@ -27,33 +31,44 @@ const steps = ['Shipping address', 'Payment details', 'Review your order'];
 const theme = createTheme();
 
 export class CheckoutPaylater extends Component {
-	state = {
+	static contextType = AppContext;
+	constructor(props) {
+		super(props);
+	this.state = {
 		step: 1,
-		email: '',
-		password: '',
-		occupation: '',
-		firstName: '',
-		lastName: '',
-		city: '',
-		bio: '',
-		show: false,
-		showHeader: true,
-		showTitle: true,
-		showLabel: true,
-		showButton: true,
-		showCopy: true,
-		showPaper: true,
-		url: '',
-		path: '',
-		params: {
-		  id: '',
-		  commerce_tk: '',
-		  amount: '',
-		  bank_provider: '',
-		  origin: '',
-		  redirect_uri: '',
-		  token_pay: '',
-		  token_con_u: ''
+		contexto: {
+			email: '',
+			password: '',
+			occupation: '',
+			firstName: '',
+			lastName: '',
+			city: '',
+			bio: '',
+			show: false,
+			showHeader: true,
+			showTitle: true,
+			showLabel: true,
+			showButton: true,
+			showCopy: true,
+			showPaper: true,
+			dataEncrytada: "",
+			nonce: "",
+			url: '',
+			path: '',
+			params: {
+			id: '',
+			commerce_tk: '',
+			amount: '',
+			bank_provider: '',
+			origin: '',
+			redirect_uri: '',
+			jwtCIBC: "",		
+			jwtStrapi: "",
+			infoComercio:{}
+			},
+			updateContext:  (objeto) => {
+				this.setState({ contexto: {...this.state.contexto, ...objeto}})
+			}
 		},
 		container: {
 		  component: "main",
@@ -68,7 +83,9 @@ export class CheckoutPaylater extends Component {
 		  sx_p_md: 3
 		}
 		
-	};
+	
+	}
+}
 
 	componentDidMount() {
 		//creado por danielcastrove
@@ -78,26 +95,8 @@ export class CheckoutPaylater extends Component {
 		const { show, step } = this.state;
 		
 		//obtenemos las variables get
-		let get_params = new URLSearchParams(window.location.search);
-		//segun el caso cambiamos las variables de los estaos
-		if(get_params.has("id") && get_params.has("amount")){
-			this.setState({
-				show: true,
-				url: window.location.href,
-				path: window.location.pathname,
-				params: {
-					 id: get_params.get("id"),
-					 commerce_tk: get_params.get("commerce_tk"),
-					 amount: get_params.get("amount"),
-					 bank_provider: get_params.get("bank_provider"),
-					 origin: get_params.get("origin"),
-					 redirect_uri: get_params.get("redirect_uri"),
-					 token_pay: '',
-					 token_con_u: ''
-				}	
-			});
 			
-			if(step==1){
+			if(step==1 || step==2){
 				this.setState({
 					showHeader: false,
 					showTitle: false,
@@ -112,7 +111,7 @@ export class CheckoutPaylater extends Component {
 					}
 				});
 			}
-		}
+		/*}
 		else{
 			if(!show){
 				this.setState({
@@ -123,7 +122,7 @@ export class CheckoutPaylater extends Component {
 					showCopy: true
 				});
 			}
-		}	
+		}*/	
 	} //end fuction componentDidMount 
 
 	copyright = (props_cr) => {
@@ -139,15 +138,29 @@ export class CheckoutPaylater extends Component {
 	};
 	
 	getStepContent = (step) => {
+
 		const { showHeader, values, params } = this.state;
-	
+
+
 					return (
 
 						<Router>
 							<Switch>
-
+								<Route path="/registro">
+									<RegisterUser
+									nextStep={this.nextStep}
+									prevStep={this.prevStep}
+									handleChange={this.handleChange}
+									values={values}
+									showHeader={showHeader}
+									params={params}
+									updateContext= {this.updateContext}
+									/>
+								</Route>
 								<Route path="/redirect">
-									<h1>Estoy en la redireccion</h1>
+									<Success
+									updateContext= {this.updateContext}
+									/>
 								</Route>
 								<Route path="/">
 									<AuthUserCheckout
@@ -156,33 +169,44 @@ export class CheckoutPaylater extends Component {
 									values={values}
 									showHeader={showHeader}
 									params={params}
+									updateContext= {this.updateContext}
 									/>
 								</Route>
+							
 							</Switch>
 						</Router>
 					);
 				}
-
 	
 	// Proceed to next step
 	nextStep = () => {
 		const { step } = this.state;
-		this.setState({
+		/*this.setState({
 		  step: step + 1
-		});
+		});*/
 	};
 
 	// Go back to prev step
 	prevStep = () => {
 		const { step } = this.state;
-		this.setState({
+		/*this.setState({
 		  step: step - 1
-		});
+		});*/
 	};
 
 	// Handle fields change
 	handleChange = input => e => {
-		this.setState({ [input]: e.target.value });
+		/*this.setState({ [input]: e.target.value });*/
+	};
+	
+	linkClick = (get_step_l) => {
+		const { get_step } = get_step_l;
+		
+		/*if(get_step) {
+			this.setState({ 
+				step: get_step 
+			})
+		}*/
 	};
 
 	render() {
@@ -202,6 +226,7 @@ export class CheckoutPaylater extends Component {
 		};*/
 		
 		return (
+			<AppContext.Provider value = {this.state.contexto}>
 			<ThemeProvider theme={theme}>
 				<CssBaseline />
 				{showHeader  && (
@@ -293,8 +318,9 @@ export class CheckoutPaylater extends Component {
 					
 				</Container>
 			</ThemeProvider>
-		);
-	}
-}
+			</AppContext.Provider>
+		); //end return
+	} //end render
+} //end class
 
 export default CheckoutPaylater;

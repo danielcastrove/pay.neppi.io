@@ -1,63 +1,44 @@
 import axios from 'axios';
-import { v4 as uuidv4 } from 'uuid';
 import {numberFloatFormater} from '../utils/utilsGeneral'
-export default async function genetareConcentID(amount, infoComercio, jwtCIBC ) {
-
-    if(!infoComercio?.account_number || infoComercio?.bank_sheme || infoComercio?.name_titular_bank || jwtCIBC ) {
-        return { estatus: false, url: ""}
+export default async function genetareConcentID(amount, infoComercio, jwtCIBC, jwtStrapi, dataencriptada, nonce, uriwordpress ) {
+    console.log(dataencriptada, " mamalo " ,nonce)
+    if(!infoComercio?.account_number || !infoComercio?.bank_sheme || !infoComercio?.name_titular_bank || !jwtCIBC || !jwtStrapi|| !dataencriptada || !nonce || !uriwordpress ) {
+        return { estatus: false, url: "", mensaje:"datos faltantes para poder realizar la funcion de generacion"}
     }
 
-    const data = JSON.stringify({
-            "Data": {
-                "Initiation": {
-                "InstructionIdentification": "instr-identification",
-                "EndToEndIdentification": "e2e-identification",
-                "InstructedAmount": {
-                    "Amount": numberFloatFormater(amount),
-                    "Currency": "CAD"
-                },
-                "DebtorAccount": null,
-                "CreditorAccount": {
-                    "SchemeName": infoComercio?.bank_sheme,
-                    "Identification": infoComercio?.account_number,
-                    "Name":  infoComercio?.name_titular_bank,
-                    "SecondaryIdentification": "secondary-identif"
-                },
-                "RemittanceInformation": {
-                    "Unstructured": "Tools",
-                    "Reference": "Tools"
-                }
-                }
-            },
-            "Risk": {
-                "PaymentContextCode": "EcommerceGoods",
-                "MerchantCategoryCode": null,
-                "MerchantCustomerIdentification": null,
-                "DeliveryAddress": null
-            }
-            });
+    const data2 = JSON.stringify({
+        "amount": numberFloatFormater(amount), 
+        "infoComercio": infoComercio, 
+        "jwtCIBC": jwtCIBC
+        });
 
-    const config = {
+        const config = {
         method: 'post',
-        url: 'https://api.cibc.useinfinite.io/open-banking/v3.1/pisp/bnpl-payment-consents',
+        url: 'http://mystrapi.mooo.com:1337/comercios/generateConcentID',
         headers: { 
-            'Authorization': 'Bearer '+ jwtCIBC, 
-            'x-fapi-financial-id': 'TBD', 
-            'Content-Type': 'application/json', 
-            //'x-jws-signature': 'DUMMY_SIG', 
-            'x-idempotency-key': uuidv4()
+            'Authorization': 'Bearer '+ jwtStrapi, 
+            'Content-Type': 'application/json'
         },
-        data : data
-    };
-    try {
-        const response = await axios(config)
-        console.log(response)
-    } 
-    catch (error) {
-        console.log(error)
-        return { estatus: false, url: "" , mensaje: "error al generar la consulta http hacia https://api.cibc.useinfinite.io/open-banking/v3.1/pisp/bnpl-payment-consents"}
+        data : data2
+        };
+        try {
+            console.log(config)
+            const response = await axios(config)
+            console.log(response)
+            if(response.data?.status == "Success" && response.data?.dataEnvio?.Data?.ConsentId) {
+                //const urlmyredirect = `http://mystrapi.mooo.com/redirect?uriworpress=${dataencriptada}&nonce=${nonce}`
+                const urlmyredirect = `http://mystrapi.mooo.com/redirect?uriworpress=${uriwordpress}`
 
-    }
-
+                const urlRedirect = `https://api.cibc.useinfinite.io/authorize?client_id=G8ObsizNsxH4BDbH5xdezSUgCH6y1sOczf-D4rfYJco=&response_type=code id_token&scope=openid payments&redirect_uri=${urlmyredirect}&state=ABC&request=${response.data?.dataEnvio?.Data?.ConsentId}`;
+                const urlRedirect2 = `https://api.cibc.useinfinite.io/authorize?client_id=G8ObsizNsxH4BDbH5xdezSUgCH6y1sOczf-D4rfYJco=&response_type=code id_token&scope=openid payments&redirect_uri=${urlmyredirect}&state=ABC&request=${response.data?.dataEnvio?.Data?.ConsentId}`
+                return { estatus: true, url: urlRedirect2 , mensaje: "consulta satisfactoria hacia https://api.cibc.useinfinite.io/open-banking/v3.1/pisp/bnpl-payment-consents"}
+            }
+            return { estatus: false, url: "" , mensaje: "Error en la respuesta de strapi. DAta incompleta"}
+        } 
+        catch (error) {
+            console.log(error)
+            return { estatus: false, url: "" , mensaje: "error al generar la consulta http hacia https://api.cibc.useinfinite.io/open-banking/v3.1/pisp/bnpl-payment-consents"}
+    
+        }
 
 }
