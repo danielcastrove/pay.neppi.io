@@ -1,0 +1,28 @@
+version: '3.4'
+services:
+
+  api-pago-mongo-container:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: jese
+      MONGO_INITDB_ROOT_PASSWORD: 25448132
+    container_name: api-pago-mongo-container-dev-local
+    networks:
+      - api-pago-red
+    ports:
+      - "2002:27017"
+
+  restore:
+    image: mongo
+    volumes:
+      - ./dump:/var/dump
+    working_dir: /var
+    links:
+      - api-pago-mongo-container:mongodb
+    command: bash -c "mongodump --forceTableScan --host mongodb --port 27017 -u jese -p 25448132 -d ApipagoInit --authenticationDatabase admin &&  mongorestore -d ApipagoInit -u jese -p 25448132 --host mongodb --port 27017 --authenticationDatabase admin --maintainInsertionOrder /var/dump/ApipagoInit"
+    networks:
+      - api-pago-red
+
+networks:
+  api-pago-red:
+

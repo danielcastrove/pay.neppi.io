@@ -1,0 +1,7 @@
+#Despues de crear el repositorio para la imagen el el ECR de AWS se vincula la seccion de repositorio en la terminal para apuntar al repositorio de aws, y se procede a complilar la imagen docker correspondiente a para luego hacer push al repositorio
+
+aws ecr get-login-password --profile neppi --region us-east-2 | docker login --username AWS --password-stdin 993905722383.dkr.ecr.us-east-2.amazonaws.com
+
+docker build -t 993905722383.dkr.ecr.us-east-2.amazonaws.com/pay-neppi-docker-desarrollo:V0.1  -f Dockerfiles/Dockerfile.dev.aws  .
+
+docker push 993905722383.dkr.ecr.us-east-2.amazonaws.com/pay-neppi-docker-desarrollo:V0.1

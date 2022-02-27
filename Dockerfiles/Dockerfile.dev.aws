@@ -1,0 +1,13 @@
+FROM httpd:2.4
+RUN echo 'root:25448132' | chpasswd
+RUN apt-get update && apt-get install -y openssh-server
+COPY ssh/sshd_config /etc/ssh/sshd_config
+RUN service ssh start 
+COPY build/ /usr/local/apache2/htdocs/
+COPY httpd.conf /usr/local/apache2/conf/httpd.conf
+ENV NODE_ENV=development
+EXPOSE 2220
+EXPOSE 80
+EXPOSE 8080
+USER root
+CMD service ssh restart && httpd-foreground

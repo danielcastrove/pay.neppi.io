@@ -1,108 +1,53 @@
 import React, { Component } from 'react';
 import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
+import { LoadingButton } from '@mui/lab'
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-//import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import { Alert } from '@mui/material';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import ErrorMessage from './ErrorMessage';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import genetareConcentID from '../services/genetareConcentID'
-import {decrypDataNeppi} from '../utils/utilsGeneral'
-import CircularProgress from '@mui/material/CircularProgress';
 import {
 	BrowserRouter as Router,
-	Link
+	Link,
+	Navigate
   } from "react-router-dom";
 import AppContext from '../contextos/AppContext'
 import axios from 'axios';
-
-const theme = createTheme();
+const {REACT_APP_SERVER_BACKEND} = process.env 
 
 export class AuthUserCheckout extends Component {
 	static contextType = AppContext;
+	
 	constructor(props) {
 		super(props);
+		
 		this.state = {
 		  showButton: true,
 		  showHeader: false,
+		  redirectEstate: false,
 		  postId: '',
 		  errorMessage: null,
 		  isLoaded: false,
 		  infoComercio: {},
 		  items: [],
-		  tokenId: this.context?.params?.id,
-		  loading: null,
-		  printMsg: ["Warning: the correct information was not sent to make the payment.", "Please Return to Trade ..."]
+		  spiner: false
 		};
 
 	}
 
 	componentDidMount() {
-		this.validateParams().then((valor) => { 
+		/*this.validateParams().then((valor) => { 
 			this.setState({loading: valor}) 
-		})
+		})*/
 	  }
 
-	validateParams = async () => {
 
-		if(this.context?.dataEncrytada && this.context?.params?.id  && this.context?.params?.amount &&  this.context?.params?.redirect_uri) {
-
-			return true
-		} else {
-
-			let get_params = new URLSearchParams(window.location.search);
-			//segun el caso cambiamos las variables de los estaos
-
-			if(get_params.has("dataneppi") && get_params.has("nonce")){
-
-				const DatosURL = await decrypDataNeppi(get_params.get("dataneppi"),get_params.get("nonce"))
-				if(DatosURL?.status == "valido" && DatosURL?.data?.id && DatosURL?.data?.amount &&  DatosURL?.data?.redirect_uri ){
-					this.context.updateContext({
-						url: window.location.href,
-						path: window.location.pathname,
-						dataEncrytada: get_params.get("dataneppi"),
-						nonce: get_params.get("nonce"),
-						params: {
-							 ...this.context.params,
-							 id: DatosURL?.data?.id,		
-							 amount: DatosURL?.data?.amount,
-							 redirect_uri: DatosURL?.data?.redirect_uri,
-		
-						}	
-					});
-					this.setState({tokenId: DatosURL?.data?.id})
-					return true
-				} else {
-					return false
-				}
-				
-		} else {
-			return false
-		}
-	}
-					
-	};
-	requestSend = (event) => {
+	signIn = async(event) => {
 		event.preventDefault();
-		const data = new FormData(event.currentTarget);
-		// eslint-disable-next-line no-console
-		console.log({
-		  email: data.get('email'),
-		  password: data.get('password')
-		});
-	}	
-	
-	signIn = (event) => {
-		event.preventDefault();
-		this.setState({ errorMessage: null })
+
+		this.setState({ errorMessage: null, spiner: true, })
 		const data_form = new FormData(event.currentTarget);
 		
 		const requestOptions = {
@@ -115,119 +60,96 @@ export class AuthUserCheckout extends Component {
 				password: data_form.get('password') 
 			})
 		};
-		fetch('http://mystrapi.mooo.com:1337/auth/local', requestOptions)
-			.then(async response => {
-				const isJson = response.headers.get('content-type')?.includes('application/json');
-				const data = isJson && await response.json();
-				
-				/*console.log({
-					jwt1: data.jwt,
-					email1: data_form.get('email'),
-					password1: data_form.get('password')
-				});*/
-				
-				// check for error response
-				if(!response?.ok && !data?.jwt && data?.error) {
-					// get error message from body or default to response status			
-					const error = (data && data.message) || response.status;
-					//return Promise.reject(error);
-					
-					this.setState({ errorMessage: "Ususario o contraseña"});
-					console.error('There was an error!', data.error);
-				} else if(response?.ok && !data?.jwtCIBC ) {
-					// get error message from body or default to response status			
-					const error = (data && data.message) || response.status;
-					//return Promise.reject(error);
-					
-					this.setState({ errorMessage: "No se logro recuperar el token bancario"});
-					console.error('There was an error!', error);
-				} else if (response?.ok && !data?.user?.confirmed ) {
-					// get error message from body or default to response status			
-					const error = (data && data.message) || response.status;
-					//return Promise.reject(error);
-					
-					this.setState({ errorMessage: "Ususario no confirmado"});
-					console.error('There was an error!', error);
-				}
-				
-				if(data?.jwt && data?.jwtCIBC  && data?.user?.confirmed){
-					this.context.updateContext({
-						params: {
-							 ...this.context.params,
-							 jwtCIBC:  data.jwtCIBC,		
-							 jwtStrapi: data.jwt,
-		
-						}	
-					});
-					this.setState({ 
-						postId: data.jwt,
-						jwtCIBC: data.jwtCIBC,
-						isLoaded: true,
-						items: data 
-					})
 
-					const data2 = JSON.stringify({
-					"tokenTerminal": this.state.tokenId
-					});
-
-					const configComercio = {
-					method: 'post',
-					url: 'http://mystrapi.mooo.com:1337/comercios/getComercioFromToken',
-					headers: { 
-						'Authorization': 'Bearer '+data.jwt, 
-						'Content-Type': 'application/json'
-					},
-					data : data2
-					};
-
-					axios(configComercio)
-					.then(async (response) => {
-						if(response?.data?.status == "Success"){
-							this.setState({ 
-								infoComercio: response?.data?.dataEnvio ,
-							})
-							this.context.updateContext({
-								params: {
-									 ...this.context.params,
-									 infoComercio:  response?.data?.dataEnvio,		
+		try {
+			const response = await fetch(REACT_APP_SERVER_BACKEND+'/auth/local', requestOptions)
+			const isJson = response.headers.get('content-type')?.includes('application/json');
+			const data = isJson && await response.json();
+			if(!response?.ok && !data?.jwt && data?.error) {
+				// get error message from body or default to response status			
+				const error = (data && data.message) || response.status;
+				//return Promise.reject(error);
 				
-								}
-							})	
-							const objectoConcentID = await genetareConcentID(this.context?.params?.amount, this.context?.params?.infoComercio , this.context?.params?.jwtCIBC, this.context?.params?.jwtStrapi,  this.context?.dataEncrytada, this.context?.nonce, this.context?.params?.redirect_uri)
-							if(objectoConcentID?.estatus){
-								console.log(objectoConcentID?.url)
-								window.location.href = objectoConcentID?.url;
-							} else {
-								this.setState({ errorMessage: objectoConcentID?.mensaje});
-							}
-	
-						} else if(response?.data?.mensaje) {
-							this.setState({ errorMessage: response?.data?.mensaje});
-	
-						} else {
-							this.setState({ errorMessage: "no se logro recuperar la data de la tienda"});
-
-						}
-					})
-					.catch(error => {
-						this.setState({ errorMessage: error.toString() });
-						console.error('There was an error!', error);
-					});
-					
-					//this.continue()
-					
-					console.log({
-						jwt: data.user.confirmed,
-						email: data_form.get('email'),
-						password: data_form.get('password')
-					});
-				}
+				this.setState({ errorMessage: "Ususario o contraseña invalidos", spiner: false});
+				console.error('There was an error!', data.error);
+			} else if (response?.ok && !data?.user?.confirmed ) {
+				// get error message from body or default to response status			
+				const error = (data && data.message) || response.status;
+				//return Promise.reject(error);
 				
-			})
-			.catch(error => {
-				this.setState({ errorMessage: error.toString() });
+				this.setState({ errorMessage: "Ususario no confirmado", spiner: false});
 				console.error('There was an error!', error);
-			});
+			}
+
+			if(data?.jwt && data?.user?.confirmed){
+				this.setState({ 
+					postId: data.jwt,
+					isLoaded: true,
+					items: data 
+				})
+				if(this.context.Facturation){
+					localStorage.setItem("JWTneppi", data.jwt)
+		
+					this.context.updateContext({
+
+						userInfo: data?.user,
+						jwtStrapi: data.jwt,
+					})
+				} else {
+					const data2 = JSON.stringify({
+						"tokenTerminal": this.context.id
+						});
+		
+						const configComercio = {
+						method: 'post',
+						url: REACT_APP_SERVER_BACKEND+'/comercios/getComercioFromToken',
+						headers: { 
+							'Authorization': 'Bearer '+data.jwt, 
+							'Content-Type': 'application/json'
+						},
+						data : data2
+						};
+						try {
+							const response2 = await axios(configComercio)
+							if(response2?.data?.status == "Success"){
+								this.setState({ 
+									infoComercio: response2?.data?.dataEnvio ,
+									spiner: false
+								})
+								localStorage.setItem("JWTneppi", data.jwt)
+		
+									this.context.updateContext({
+										infoComercio: response2?.data?.dataEnvio ,
+										id_sucursal: response2?.data?.id_sucursal_preticion, 
+										id_terminal: response2?.data?.id_terminal_preticion,
+										userInfo: data?.user,
+										jwtStrapi: data.jwt,
+									})
+				
+								
+		
+							} else if(response2?.data?.mensaje) {
+								this.setState({ errorMessage: response2?.data?.mensaje, spiner: false});
+		
+							} else {
+								this.setState({ errorMessage: "no se logro recuperar la data de la tienda", spiner: false});
+		
+							}
+						} catch (error) {
+							this.setState({ errorMessage: error.toString(), spiner: false });
+							console.error('There was an error!', error);
+						}
+				}
+				
+
+			}
+		} catch (error) {
+			this.setState({ errorMessage: error.toString(), spiner: false });
+			console.error('There was an error!', error);
+		}
+		
+
+
 		
 	}
 	
@@ -236,9 +158,9 @@ export class AuthUserCheckout extends Component {
 		return (
 			<Typography variant="body2" color="text.secondary" align="center" {...get_props}>
 			  {'Copyright '} &copy; {' '} {new Date().getFullYear()} {' | '}
-			  <Link color="inherit" href="https://neppi.io/" target="blank">
+			  <a color="inherit" href="https://neppi.io/" target="blank">
 				Neppi - Buy Now, pay Later 
-			  </Link>
+			  </a>
 			</Typography>
 		);
 	}
@@ -262,15 +184,14 @@ export class AuthUserCheckout extends Component {
 	
 	render(){
 		const { values, handleChange, params } = this.props;
-		const { postId, isLoaded, items, errorMessage  } = this.state;
-		if (this.state.loading == null ) {
+		const { postId, isLoaded, items, errorMessage, redirectEstate } = this.state;
+		if(redirectEstate){
 			return (
-				<Box sx={{ display: 'flex', justifyContent: "center" }}>
-				  <CircularProgress />
-				</Box>
-			  ); 
-		}else if(this.state.loading == true) {
-			
+				<React.Fragment>
+				<Navigate to="/redirect" replace={true} />
+			   </React.Fragment>
+		   );
+		} else {
 			return (
 				<React.Fragment>
 				   <Box
@@ -324,21 +245,22 @@ export class AuthUserCheckout extends Component {
 						   />
 						   {
 							   (errorMessage) ?
-								   <Alert variant="filled" severity="error">
-								   {errorMessage}
-									 </Alert>:
+								   	<Alert variant="filled" severity="error">
+								   		{errorMessage}
+									</Alert>:
 								   null  
 							   
 						   }
 						   { 
-						   <Button
+						   <LoadingButton
 							   type="submit"
 							   fullWidth
+							   loading={this.state.spiner}
 							   variant="contained"
 							   sx={{ mt: 3, mb: 2 }}
 						   >
-							   Sign In
-						   </Button>
+						   Sign In
+						   </LoadingButton>
 
 						   /*<Button
 							   type="submit"
@@ -372,16 +294,6 @@ export class AuthUserCheckout extends Component {
 					 
 			   </React.Fragment>
 		   );
-		} else {
-			return (
-				<React.Fragment>
-					<ErrorMessage
-						printMsg= {this.state?.printMsg}
-						handleChange={this.props?.params?.handleChange}
-					/>
-				</React.Fragment>
-				);
-
 		}
 		 //end return
 	} //end render

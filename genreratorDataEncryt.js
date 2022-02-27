@@ -6,7 +6,7 @@ let sodium;
 
 (async function () {
     if (!sodium) sodium = await SodiumPlus.auto();
-    let plaintext = JSON.stringify({id:"ff1ecda1-4eab-4784-bb42-1ac753614dce", amount: "1.00", redirect_uri: encodeURIComponent("https://foodinternationalservices.com/pagina-de-pago/pedido-recibido/5906/?key=wc_order_UcZPess3jMWiu") });
+    let plaintext = JSON.stringify({id:"ff1ecda1-4eab-4784-bb42-1ac753614dce", amount: "", redirect_uri: encodeURIComponent("https://foodinternationalservices.com/pagina-de-pago/pedido-recibido/5906/?key=wc_order_UcZPess3jMWiu"), "Preselect": {ProductoId: "61c31ccfd7f019e1ccbc58fc", ProveedorId: "61c31db1d7f019e1ccbc58fe" } });
 
     const LamdabKeys = readFileSync('public/LamdabKeys', "hex");
     //const LamdabDecript = readFileSync('public/DecrytKeys', "hex");

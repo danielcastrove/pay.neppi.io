@@ -13,17 +13,24 @@ import React from 'react';
         path: '',
         dataEncrytada: "",
         nonce: "",
-        params: {
+        userInfo: {},
+        infoComercio:{},
+        id_sucursal:"",
+        id_terminal:"",
         id: '',
         commerce_tk: '',
         amount: '',
         bank_provider: '',
         origin: '',
         redirect_uri: '',
+        redirectData: {},
         jwtCIBC: "",		
         jwtStrapi: "",
-        infoComercio:{}
-        },
+        urlFinalLogin: "",
+        Facturation: "",
+        id_factura:"",
+        Preselect:"",
+        opacitiStyle: "noOpacity",
         updateContext: () => {
 
         }

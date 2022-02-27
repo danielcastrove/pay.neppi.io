@@ -6,6 +6,21 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #3e3b3b;
+}
+html {
+  background-color: #3e3b3b;
+}
+#root {
+  background-color: #3e3b3b;
+}
+.App {
+    background-color: #3e3b3b;
+    transition: all 500ms;
+    opacity: 0;
+}
+.noOpacity {
+  opacity: 1;
 }
 
 code {

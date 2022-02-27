@@ -1,0 +1,28 @@
+version: '3.4'
+services:
+  api-pago-container-prod:
+    image: api-pago-movil-strapi_api-pago-container-dev
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      - DATABASE_URI=mongodb://jese:25448132@mongodb:27017/ApipagoInit?ssl=false&authSource=admin
+      - PORT=8002
+      - NODE_ENV=production
+    volumes:
+      - ./api:/home/node/app/api
+      - ./components:/home/node/app/components
+      - ./config:/home/node/app/config
+      - ./extensions:/home/node/app/extensions
+      - ./plugins:/home/node/app/plugins     
+      - ./public:/home/node/app/public
+    links:
+      - api-pago-mongo-container:mongodb
+    command: [ "npm", "start" ]
+    ports:
+      - "8002:8002"
+    container_name: api-pago-container-prod
+    depends_on:
+      - api-pago-mongo-container
+    networks:
+      - api-pago-red

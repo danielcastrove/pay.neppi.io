@@ -13,16 +13,16 @@ import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
-import AuthUserCheckout from './AuthUserCheckout';
-import Success from './Success'
+import AuthUserCheckout from '../src/components/AuthUserCheckout';
+import Success from '../src/components/Success'
 import {
 	BrowserRouter as Router,
 	Switch,
 	Route
   } from "react-router-dom";
 
-import RegisterUser from './RegisterUser';
-import AppContext from '../contextos/AppContext'
+import RegisterUser from '../src/components/RegisterUser';
+import AppContext from '../src/contextos/AppContext'
 //import AddressForm from './AddressForm';
 //import PaymentForm from './PaymentForm';
 //import Review from './Review';

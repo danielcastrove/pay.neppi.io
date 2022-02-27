@@ -1,0 +1,31 @@
+version: '3.4'
+services:
+  api-pago-container-dev-modo-grafico:
+    image: api-pago-movil-strapi_api-pago-container-prod
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      - DATABASE_URI=mongodb://jese:25448132@mongodb:27017/ApipagoInit?ssl=false&authSource=admin
+      - PORT=3000
+      - NODE_ENV=development
+    volumes:
+      - ./build:/home/node/app/build
+      - ./.cache:/home/node/app/.cache
+      - ./api:/home/node/app/api
+      - ./components:/home/node/app/components
+      - ./config:/home/node/app/config
+      - ./extensions:/home/node/app/extensions
+      - ./plugins:/home/node/app/plugins
+      - ./public:/home/node/app/public
+    command: npm run develop -- --watch-admin
+    links:
+      - api-pago-mongo-container:mongodb
+    ports:
+      - "8000:8000"
+      - "3000:3000"
+    container_name: api-pago-container-dev-server-modo-grafico
+    depends_on:
+      - api-pago-mongo-container
+    networks:
+      - api-pago-red
